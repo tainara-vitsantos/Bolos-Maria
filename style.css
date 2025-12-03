@@ -1,0 +1,72 @@
+:root{
+    --pink:#E8A79B;
+    --pink-dark:#d07c73;
+    --brown:#5d4037;
+    --cream:#fcf8f3;
+    --muted:#6c5550;
+  }
+  body{
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    scroll-behavior: smooth;
+    background: linear-gradient(180deg, #fff 0%, var(--cream) 100%);
+    color: var(--brown);
+  }
+  /* NAV */
+  .navbar {
+    background: var(--pink);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+  .navbar-brand { font-weight:700; color:var(--brown) !important; }
+  .nav-link { color:var(--brown) !important; font-weight:500; }
+  .nav-link:hover { color:var(--pink-dark) !important; }
+
+  /* botão rosinha padrão */
+  .btn-pink {
+    background: linear-gradient(180deg,var(--pink) 0%, var(--pink-dark) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: .55rem 1.2rem;
+    box-shadow: 0 6px 18px rgba(208,124,115,0.18);
+  }
+  .btn-pink:hover { transform: translateY(-3px); }
+
+  /* Carrossel */
+  .carousel-item img{ height: 70vh; object-fit: cover; border-radius: 12px; }
+
+  /* Section titles */
+  .section-title { color: var(--brown); font-weight:700; margin-bottom:1rem; }
+
+  /* Cardápio cards */
+  .menu-card { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); border:none; overflow:hidden; }
+  .menu-card .card-img-top { height:200px; object-fit:cover; }
+  .price { color:var(--pink-dark); font-weight:700; font-size:1.25rem; }
+
+  .carousel-inner img {
+    transition: transform 0.6s ease, filter 0.6s ease;
+}
+
+.carousel-inner img:hover {
+    transform: scale(1.05); /* aumenta levemente */
+    filter: brightness(0.9); /* escurece suavemente */
+}
+
+
+  /* Testemunhos */
+  .testimonial { background:#fff; border-left:6px solid var(--pink); padding:1.25rem; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.04); }
+
+  /* Footer */
+  footer { background:var(--pink); color:var(--brown); padding:2rem 0; }
+
+  /* Small helpers */
+  .badge-cart { background:var(--pink-dark); color:#fff; border-radius:999px; padding:.25rem .5rem; font-weight:700; }
+
+  /* Fade-in on scroll */
+  .fade-up { opacity:0; transform:translateY(20px); transition: .7s ease; }
+  .fade-up.show { opacity:1; transform:translateY(0); }
+
+  /* Responsive tweaks */
+  @media (max-width: 768px){
+    .carousel-item img { height: 40vh; }
+    .btn-pink { padding: .45rem .9rem; }
+  }
