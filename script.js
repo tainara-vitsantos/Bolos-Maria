@@ -70,7 +70,7 @@ function updateCartUI(){
   });
 }
 
-// ---------- Adicionar ao carrinho (COM MODAL) ----------
+// ---------- ADICIONAR AO CARRINHO ----------
 document.querySelectorAll('.add-to-cart').forEach(btn=>{
   btn.addEventListener('click', ()=>{
 
@@ -91,102 +91,48 @@ document.querySelectorAll('.add-to-cart').forEach(btn=>{
 
     updateCartUI();
 
-    // ---- Modal de adicionado ao carrinho ----
     const modalAdicionado = new bootstrap.Modal(document.getElementById("modalAdicionado"));
     document.getElementById("msgAdicionado").innerText =
       `${qty}x ${name} foi adicionado ao carrinho!`;
     modalAdicionado.show();
 
-    // Efeito no botão
     btn.classList.add('disabled');
     setTimeout(()=> btn.classList.remove('disabled'), 400);
   });
 });
 
-// ---------- Modais ----------
+// ---------- MODAIS (AGORA SOMENTE UMA VEZ) ----------
 const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
-const modalPedidoFinalizado = new bootstrap.Modal(document.getElementById("modalPedidoFinalizado"));
-const modalCarrinhoLimpo = new bootstrap.Modal(document.getElementById("modalCarrinhoLimpo"));
+const clearCartModal = new bootstrap.Modal(document.getElementById('clearCartModal'));
+const encomendaModal = new bootstrap.Modal(document.getElementById('encomendaModal'));
 
 document.getElementById('openCartBtn').addEventListener('click', ()=> cartModal.show());
 
-// limpar carrinho — COM MODAL
+// ---------- LIMPAR CARRINHO ----------
 document.getElementById('clearCartBtn').addEventListener('click', ()=>{
+  if(cart.length === 0) return;
+
   cart.splice(0, cart.length);
   updateCartUI();
-  modalCarrinhoLimpo.show();
+  clearCartModal.show();
 });
 
-// finalizar pedido — COM MODAL
+// ---------- FINALIZAR PEDIDO -> ABRIR MODAL DE ENCOMENDA ----------
 document.getElementById('checkoutBtn').addEventListener('click', ()=>{
-  if(cart.length === 0){
-    modalPedidoFinalizado.show();
-    return;
-  }
+  if(cart.length === 0) return;
 
-  const productSummary = cart.map(i => `${i.qty} x ${i.name}`).join(' — ');
+  const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
+  const qtdTotal = cart.reduce((s,i)=>s + i.qty, 0);
 
-  document.getElementById('orderProduct').value = 'Pedido: ' + productSummary;
-  document.getElementById('orderPrice').value = formatBRL(
-    cart.reduce((s,i)=>s + i.price * i.qty, 0)
-  );
-  document.getElementById('orderQty').value =
-    cart.reduce((s,i)=>s + i.qty, 0);
+  document.getElementById("encomendaResumo").innerHTML =
+    `Quantidade total: <strong>${qtdTotal}</strong><br>
+     Total: <strong>${formatBRL(total)}</strong>`;
 
-  const encomendaModal = new bootstrap.Modal(document.getElementById('encomendaModal'));
   cartModal.hide();
   encomendaModal.show();
 });
 
-// ---------- "Fazer Pedido" direto do card ----------
-document.querySelectorAll('.order-now').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-
-    const id = btn.dataset.id;
-    const name = btn.dataset.name;
-    const price = parseFloat(btn.dataset.price);
-
-    document.getElementById('orderProduct').value = name;
-    document.getElementById('orderPrice').value = formatBRL(price);
-
-    const qtyInput = document.querySelector(`.qty-input[data-product-id="${id}"]`);
-    document.getElementById('orderQty').value =
-      qtyInput ? Math.max(1, parseInt(qtyInput.value || 1)) : 1;
-  });
-});
-
-// ---------- Envio do formulário de encomenda ----------
-document.getElementById('orderForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  if(!this.checkValidity()){
-    this.classList.add('was-validated');
-    return;
-  }
-
-  modalPedidoFinalizado.show();
-
-  const modalEl = document.getElementById('encomendaModal');
-  const modal = bootstrap.Modal.getInstance(modalEl);
-  modal.hide();
-
-  this.reset();
-  this.classList.remove('was-validated');
-});
-
-// ---------- Formulário de contato ----------
-document.getElementById('contactForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  if(!this.checkValidity()){
-    this.classList.add('was-validated');
-    return;
-  }
-
-  modalPedidoFinalizado.show();
-  this.reset();
-  this.classList.remove('was-validated');
-});
-
-// ---------- Scroll reveal ----------
+// ---------- SCROLL REVEAL ----------
 const faders = document.querySelectorAll('.fade-up');
 const io = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -204,3 +150,30 @@ const io = new IntersectionObserver((entries) => {
 
 updateCartUI();
 
+document.getElementById('sendWhatsAppBtn').addEventListener('click', () => {
+  if (cart.length === 0) return;
+
+  // Número da Maria (somente números)
+  const phone = "5514988055751"; // Ex: 55 + DDD + número → 5514988055751
+
+  let msg = "*NOVO PEDIDO — Enviado pelo site*%0A%0A";
+
+  msg += "*Itens:*%0A";
+  cart.forEach(item => {
+    msg += `• ${item.qty}x ${item.name} — ${formatBRL(item.price)}%0A`;
+  });
+
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const qtdTotal = cart.reduce((s, i) => s + i.qty, 0);
+
+  msg += `%0A*Quantidade total:* ${qtdTotal}%0A`;
+  msg += `*Total:* ${formatBRL(total)}%0A%0A`;
+
+  msg += "Por favor, confirme meu pedido 😊";
+
+  // Monta o link
+  const url = `https://wa.me/${phone}?text=${msg}`;
+
+  // Abre o WhatsApp
+  window.open(url, "_blank");
+});
